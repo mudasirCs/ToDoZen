@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do List</title>
+    <link rel="stylesheet" href="../src/styles.css" />
+    <script src="main.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div class="zoomed-image">
+        <img src="../src/logo.svg" alt="logo" class="logo rotate-object" />
+      </div>
+      <!-- <div class="actions">
+        <button class="create-project">Add Project</button>
+        <button class="create-item">Add item</button>
+      </div> -->
+    </header>
+
+    <side-bar>
+      <div class="projects">
+        <p class="project-section">Projects</p>
+        <div class="project-item">
+          <img src="../src/personal.png" alt="project-item-1" />
+          <p class="project-item-label">Personal</p>
+        </div>
+      </div>
+    </side-bar>
+
+    <!--   
+  title,
+  description,
+  notes,
+  dueDate,
+  priority,
+  completedStatus
+    -->
+
+    <main>
+      <ul class="project-container">
+        <p class="project-container-title">Design template</p>
+        <li class="list-item">
+          <div class="list-item-head">
+            <p class="list-item-title">Title 1</p>
+            <img
+              class="list-item-img"
+              src="../src/tooltip.svg"
+              alt="tooltip"
+              title="Some info text here"
+            />
+            <p class="list-item-date">October/12/2023</p>
+          </div>
+          <p class="list-item-description">
+            Desctiption: Lorem ipsum dolor sit amet, consectetur adipisicing
+            elit. Architecto inventore nemo doloribus nostrum corrupti, eius
+            quos ea, exercitationem nihil expedita sequi necessitatibus nisi
+            odit eveniet optio incidunt debitis neque placeat!
+          </p>
+          <div class="list-item-priority-container">
+            <img
+              class="list-item-priority"
+              src="../src/katana.png"
+              alt="level"
+            />
+          </div>
+          <input class="list-item-status" type="checkbox" />
+        </li>
+
+        <dialog></dialog>
+
+        <img src="../src/shurikenAdd.svg" alt="Add" class="rotate-object add" />
+      </ul>
+    </main>
+  </body>
+</html>
