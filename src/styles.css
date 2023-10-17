@@ -231,3 +231,38 @@ main {
 }
 
 /* modal styling */
+.project-container dialog {
+  font-family: sans-serif;
+  word-spacing: 0.1px;
+  border-radius: 25px;
+}
+
+dialog form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  min-width: 350px;
+}
+
+.form-group label {
+  display: inline-block;
+  min-width: 150px;
+}
+
+.form-group input {
+  min-width: 200px;
+}
+
+.form-group select {
+  text-align: center;
+  min-width: 200px;
+}
+
+.form-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}

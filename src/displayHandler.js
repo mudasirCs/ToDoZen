@@ -1,4 +1,4 @@
-import dateHandler from "./dateHandler";
+import createItem from "./item";
 import katana from "./katana.png";
 import shuriken from "./shurikenAdd.svg";
 import "./styles.css";
@@ -38,7 +38,6 @@ export default function createDisplayHandler() {
     main.appendChild(projectContainer);
 
     activateAddItemButtons();
-    createItemPopUp();
   }
 
   /*  title,
@@ -53,62 +52,49 @@ export default function createDisplayHandler() {
     const addBtns = document.querySelectorAll(".project-container img.add");
     addBtns.forEach((addBtn) => {
       addBtn.addEventListener("click", (e) => {
-        createItemPopUp();
+        renderItemPopUp((item) => {
+          proj.projList.addItem(item);
+        });
       });
     });
   }
 
-  function createItemPopUp() {
-    // Create a modal or dialog for adding an item
+  function renderItemPopUp(callBackFn) {
     const dialog = document.querySelector(".project-container dialog");
-    dialog.show();
-    dialog.classList.add("AddItemPopup");
 
-    // Create input fields for item details
-    const titleInput = document.createElement("input");
-    titleInput.placeholder = "Title";
+    const form = document.querySelector("dialog form");
 
-    const descriptionInput = document.createElement("input");
-    descriptionInput.placeholder = "Description";
+    const itemTitle = form.querySelector("#item-title");
+    const itemDescription = form.querySelector("#item-description");
+    const itemNotes = form.querySelector("#item-notes");
+    const itemDueDate = form.querySelector("#item-due-date");
+    const itemPriority = form.querySelector("#item-priority");
+    const completedStatus = form.querySelector("#completed-status");
 
-    const notesInput = document.createElement("input");
-    notesInput.placeholder = "Notes";
+    //all validation rules should be made
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
 
-    const dueDateInput = document.createElement("input");
-    dueDateInput.placeholder = "Due Date";
+      const title = itemTitle.value;
+      const description = itemDescription.value;
+      const notes = itemNotes.value;
+      const dueDate = itemDueDate.value;
+      const priority = itemPriority.value;
+      const isCompleted = completedStatus.checked;
 
-    const priorityInput = document.createElement("input");
-    priorityInput.placeholder = "Priority";
-
-    const addButton = document.createElement("button");
-    addButton.textContent = "Add Item";
-
-    addButton.addEventListener("click", () => {
-      // Retrieve the input values and create an item object
-      const newItem = {
-        title: titleInput.value,
-        description: descriptionInput.value,
-        notes: notesInput.value,
-        dueDate: dueDateInput.value,
-        priority: priorityInput.value,
-        completedStatus: false, // Default to false
-      };
-
-      // You can add validation and create the item here
-      console.log("New Item:", newItem);
-
-      // Close the modal after adding the item
-      modal.style.display = "none";
+      const item = createItem(
+        title,
+        description,
+        notes,
+        dueDate,
+        priority,
+        isCompleted
+      );
     });
 
-    modal.appendChild(titleInput);
-    modal.appendChild(descriptionInput);
-    modal.appendChild(notesInput);
-    modal.appendChild(dueDateInput);
-    modal.appendChild(priorityInput);
-    modal.appendChild(addButton);
-
-    main.appendChild(modal);
+    form.addEventListener("cancel", (e) => {
+      dialog.close;
+    });
   }
 
   function renderListItem(item) {
@@ -144,7 +130,7 @@ export default function createDisplayHandler() {
     const priorityDiv = document.createElement("div");
     priorityDiv.classList.add("list-item-priority-container");
 
-    for (let i = 0; i < item.priority; i++) {
+    for (let i = item.priority; i <= 3; i++) {
       const priorityImg = document.createElement("img");
       priorityImg.classList.add("list-item-priority");
       priorityImg.src = katana;
