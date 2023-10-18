@@ -9,12 +9,7 @@ const dateHandler = {
     return date.toLocaleDateString(locale, options);
   },
   validateDate: function (inputDate) {
-    const today = new Date();
-    if (inputDate >= today) {
-      return this.readableDate(inputDate);
-    } else {
-      return this.readableDate(today);
-    }
+    return this.readableDate(new Date(inputDate));
   },
 };
 

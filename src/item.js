@@ -10,6 +10,7 @@ export default function createItem(
 ) {
   const _dateCreated = dateHandler.getTodaysDate();
   const _dueDate = dateHandler.validateDate(dueDate);
+
   return {
     get dateCreated() {
       return _dateCreated;
@@ -23,7 +24,7 @@ export default function createItem(
     title,
     description,
     notes,
-    priority,
+    priority: parseInt(priority),
     completedStatus,
   };
 }

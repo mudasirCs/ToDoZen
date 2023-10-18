@@ -87,41 +87,40 @@ export default function createDisplayHandler() {
     const submitBtn = document.querySelector(".submit");
 
     //all validation rules should be made
-    submitBtn.addEventListener("click", (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
 
-      // const title = itemTitle.value;
-      // const description = itemDescription.value;
-      // const notes = itemNotes.value;
-      // const dueDate = itemDueDate.value;
-      // const priority = itemPriority.value;
-      // const isCompleted = completedStatus.checked;
+      const title = itemTitle.value;
+      const description = itemDescription.value;
+      const notes = itemNotes.value;
+      const dueDate = itemDueDate.value;
+      const priority = itemPriority.value;
+      const isCompleted = completedStatus.checked;
 
-      // const item = createItem(
-      //   title,
-      //   description,
-      //   notes,
-      //   dueDate,
-      //   priority,
-      //   isCompleted
-      // );
+      const item = createItem(
+        title,
+        description,
+        notes,
+        dueDate,
+        priority,
+        isCompleted
+      );
 
       itemTitle.value = "";
       itemDescription.value = "";
       itemNotes.value = "";
-      //need to fix date intake/conversion
       itemDueDate.value = "";
       itemPriority.value = "";
       completedStatus.value = false;
 
-      let item = createItem(
-        "Template Title",
-        "Template description, just some random text that needs to be added",
-        "These are the template notes",
-        "10,10,2025",
-        "Medium",
-        true
-      );
+      // let item = createItem(
+      //   "Template Title",
+      //   "Template description, just some random text that needs to be added",
+      //   "These are the template notes",
+      //   "2025-12-30",
+      //   "Medium",
+      //   true
+      // );
 
       callBackFn(item);
       //update list again
@@ -169,23 +168,7 @@ export default function createDisplayHandler() {
     const priorityDiv = document.createElement("div");
     priorityDiv.classList.add("list-item-priority-container");
 
-    let priority;
-
-    switch (item.priority) {
-      case "High":
-        priority = 1;
-        break;
-      case "Medium":
-        priority = 2;
-        break;
-      case "Low":
-        priority = 3;
-        break;
-      default:
-        priority = 0;
-        break;
-    }
-    for (let i = priority; i <= 3; i++) {
+    for (let i = item.priority; i <= 3; i++) {
       const priorityImg = document.createElement("img");
       priorityImg.classList.add("list-item-priority");
       priorityImg.src = katana;
@@ -207,8 +190,6 @@ export default function createDisplayHandler() {
   }
 
   // need to add a toggle checkbox function for
-  // making relevant changes
-  // function checkbox
 
   return { renderProject };
 }
