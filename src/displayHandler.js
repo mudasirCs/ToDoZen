@@ -21,52 +21,62 @@ export default function createDisplayHandler() {
   //split into create proj, add items, remove items
   //create loadProject function to load from persistance layer
 
+  // function initDisplayHanlder() {
+  //   initFormActions();
+  // }
+
   function initFormActions() {
-    const dialog = document.querySelector("dialog");
-    const form = document.querySelector("dialog form");
+    return new Promise((resolve) => {
+      const dialog = document.querySelector("dialog");
+      const form = document.querySelector("dialog form");
 
-    const itemTitle = form.querySelector("#item-title");
-    const itemDescription = form.querySelector("#item-description");
-    const itemNotes = form.querySelector("#item-notes");
-    const itemDueDate = form.querySelector("#item-due-date");
-    const itemPriority = form.querySelector("#item-priority");
-    const completedStatus = form.querySelector("#completed-status");
+      const itemTitle = form.querySelector("#item-title");
+      const itemDescription = form.querySelector("#item-description");
+      const itemNotes = form.querySelector("#item-notes");
+      const itemDueDate = form.querySelector("#item-due-date");
+      const itemPriority = form.querySelector("#item-priority");
+      const completedStatus = form.querySelector("#completed-status");
 
-    //all validation rules should be made
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
+      // Add event listeners for the form submission and cancel
+      form.addEventListener(
+        "submit",
+        (e) => {
+          e.preventDefault();
 
-      const title = itemTitle.value;
-      const description = itemDescription.value;
-      const notes = itemNotes.value;
-      const dueDate = itemDueDate.value;
-      const priority = itemPriority.value;
-      const isCompleted = completedStatus.checked;
+          const item = createItem(
+            itemTitle.value,
+            itemDescription.value,
+            itemNotes.value,
+            itemDueDate.value,
+            itemPriority.value,
+            completedStatus.checked
+          );
 
-      //need to split into two; init from and use form
-      // const item = createItem(
-      //   title,
-      //   description,
-      //   notes,
-      //   dueDate,
-      //   priority,
-      //   isCompleted
-      // );
+          standardItem = item;
 
-      itemTitle.value = "";
-      itemDescription.value = "";
-      itemNotes.value = "";
-      itemDueDate.value = "";
-      itemPriority.value = "";
-      completedStatus.value = false;
+          itemTitle.value = "";
+          itemDescription.value = "";
+          itemNotes.value = "";
+          itemDueDate.value = "";
+          itemPriority.value = "";
+          completedStatus.value = false;
 
-      dialog.close();
-    });
+          dialog.close();
+          resolve(); // Resolve the Promise when the form is submitted
+        },
+        { once: true }
+      );
 
-    const cancelBtn = document.querySelector(".cancel");
-    cancelBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      dialog.close();
+      const cancelBtn = document.querySelector(".cancel");
+      cancelBtn.addEventListener(
+        "click",
+        (e) => {
+          e.preventDefault();
+          dialog.close();
+          resolve(); // Resolve the Promise when the form is canceled
+        },
+        { once: true }
+      );
     });
   }
 
@@ -103,12 +113,16 @@ export default function createDisplayHandler() {
     activateAddItemButton(proj);
   }
 
-  function activateAddItemButton(proj) {
-    //to prevent multiple event listeners on a button
+  async function activateAddItemButton(proj) {
+    // To prevent multiple event listeners on a button
     const addBtn = document.querySelector(`.${proj.projectName} .add`);
     const dialog = document.querySelector("dialog");
-    addBtn.addEventListener("click", (e) => {
+
+    addBtn.addEventListener("click", async (e) => {
       dialog.showModal();
+
+      await initFormActions();
+
       proj.addItem(standardItem);
       renderItemListRefresh(proj);
     });

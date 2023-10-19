@@ -9,7 +9,7 @@ export default function createItem(
   completedStatus
 ) {
   const _dateCreated = dateHandler.getTodaysDate();
-  const _dueDate = dateHandler.validateDate(dueDate);
+  let _dueDate = dateHandler.validateDate(dueDate);
 
   return {
     get dateCreated() {
