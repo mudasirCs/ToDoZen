@@ -1,21 +1,79 @@
+import { findProjectByName } from "./index";
 import createItem from "./item";
 import katana from "./katana.png";
-import createProject from "./project";
 import shuriken from "./shurikenAdd.svg";
 import "./styles.css";
 import tooltip from "./tooltip.svg";
 
 export default function createDisplayHandler() {
   const main = document.querySelector("main");
+  let standardItem = createItem(
+    "Template Title",
+    "Template description, just some random text that needs to be added",
+    "These are the template notes",
+    "2025-10-8",
+    "Medium",
+    true
+  );
+
   //later will use persistance layer, this is temporary
-  let proj;
-  //general implementation
+
   //split into create proj, add items, remove items
   //create loadProject function to load from persistance layer
-  function renderProject(project) {
-    proj = project;
+
+  function initFormActions() {
+    const dialog = document.querySelector("dialog");
+    const form = document.querySelector("dialog form");
+
+    const itemTitle = form.querySelector("#item-title");
+    const itemDescription = form.querySelector("#item-description");
+    const itemNotes = form.querySelector("#item-notes");
+    const itemDueDate = form.querySelector("#item-due-date");
+    const itemPriority = form.querySelector("#item-priority");
+    const completedStatus = form.querySelector("#completed-status");
+
+    //all validation rules should be made
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const title = itemTitle.value;
+      const description = itemDescription.value;
+      const notes = itemNotes.value;
+      const dueDate = itemDueDate.value;
+      const priority = itemPriority.value;
+      const isCompleted = completedStatus.checked;
+
+      //need to split into two; init from and use form
+      // const item = createItem(
+      //   title,
+      //   description,
+      //   notes,
+      //   dueDate,
+      //   priority,
+      //   isCompleted
+      // );
+
+      itemTitle.value = "";
+      itemDescription.value = "";
+      itemNotes.value = "";
+      itemDueDate.value = "";
+      itemPriority.value = "";
+      completedStatus.value = false;
+
+      dialog.close();
+    });
+
+    const cancelBtn = document.querySelector(".cancel");
+    cancelBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      dialog.close();
+    });
+  }
+
+  function renderProject(proj) {
     const projectContainer = document.createElement("ul");
     projectContainer.classList.add("project-container");
+    projectContainer.classList.add(`${proj.projectName}`);
 
     const projTitle = document.createElement("p");
     projTitle.classList.add("project-container-title");
@@ -35,103 +93,42 @@ export default function createDisplayHandler() {
     addBtn.src = shuriken;
     addBtn.alt = "Add";
     addBtn.classList.add("rotate-object", "add");
+    //may remove this, if not used
+    addBtn.setAttribute("data-project-name", proj.projectName);
 
     projectContainer.appendChild(addBtn);
 
     main.appendChild(projectContainer);
 
-    activateAddItemButtons(proj);
-    initFormActions((item) => {
-      proj.addItem(item);
+    activateAddItemButton(proj);
+  }
+
+  function activateAddItemButton(proj) {
+    //to prevent multiple event listeners on a button
+    const addBtn = document.querySelector(`.${proj.projectName} .add`);
+    const dialog = document.querySelector("dialog");
+    addBtn.addEventListener("click", (e) => {
+      dialog.showModal();
+      proj.addItem(standardItem);
+      renderItemListRefresh(proj);
     });
   }
 
-  function renderItemListRefresh() {
-    const projectContainer = document.querySelector(".project-container");
+  function renderItemListRefresh(proj) {
+    const projectContainer = document.querySelector(`.${proj.projectName}`);
 
-    const listItems = projectContainer.querySelectorAll("li.list-item");
+    const listItems = projectContainer.querySelectorAll(
+      `.${proj.projectName} li.list-item`
+    );
     listItems.forEach((item) => {
       projectContainer.removeChild(item);
     });
 
-    console.log("Entered into the den");
-    const addBtn = document.querySelector(".add");
+    const addBtn = document.querySelector(`.${proj.projectName} .add`);
 
     proj.itemsList.forEach((element) => {
       const item = renderListItem(element);
       projectContainer.insertBefore(item, addBtn);
-    });
-  }
-
-  function activateAddItemButtons() {
-    const addBtns = document.querySelectorAll(".project-container img.add");
-    addBtns.forEach((addBtn) => {
-      addBtn.addEventListener("click", (e) => {
-        const dialog = document.querySelector("dialog");
-        dialog.showModal();
-      });
-    });
-  }
-
-  function initFormActions(callBackFn) {
-    const dialog = document.querySelector("dialog");
-    const form = document.querySelector("dialog form");
-
-    const itemTitle = form.querySelector("#item-title");
-    const itemDescription = form.querySelector("#item-description");
-    const itemNotes = form.querySelector("#item-notes");
-    const itemDueDate = form.querySelector("#item-due-date");
-    const itemPriority = form.querySelector("#item-priority");
-    const completedStatus = form.querySelector("#completed-status");
-
-    const submitBtn = document.querySelector(".submit");
-
-    //all validation rules should be made
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      const title = itemTitle.value;
-      const description = itemDescription.value;
-      const notes = itemNotes.value;
-      const dueDate = itemDueDate.value;
-      const priority = itemPriority.value;
-      const isCompleted = completedStatus.checked;
-
-      const item = createItem(
-        title,
-        description,
-        notes,
-        dueDate,
-        priority,
-        isCompleted
-      );
-
-      itemTitle.value = "";
-      itemDescription.value = "";
-      itemNotes.value = "";
-      itemDueDate.value = "";
-      itemPriority.value = "";
-      completedStatus.value = false;
-
-      // let item = createItem(
-      //   "Template Title",
-      //   "Template description, just some random text that needs to be added",
-      //   "These are the template notes",
-      //   "2025-12-30",
-      //   "Medium",
-      //   true
-      // );
-
-      callBackFn(item);
-      //update list again
-      renderItemListRefresh();
-      dialog.close();
-    });
-
-    const cancelBtn = document.querySelector(".cancel");
-    cancelBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      dialog.close();
     });
   }
 

@@ -1,6 +1,5 @@
 import createDisplayHandler from "./displayHandler";
 import createItem from "./item";
-import createList from "./list";
 import createProject from "./project";
 
 const item1 = createItem(
@@ -22,22 +21,33 @@ const item2 = createItem(
   true
 );
 
-/*
-  title,
-  description,
-  notes,
-  dueDate,
-  priority,
-  completedStatus
-*/
+const item3 = createItem(
+  "Searching",
+  "find knife car keys",
+  "Search room from tip to toe or else change keys",
+  "2023-11-30",
+  "High",
+  false
+);
+
+const projects = [];
 
 const project = createProject("Personal");
 project.addItem(item1);
 project.addItem(item2);
 
+const project2 = createProject("Gym");
+project2.addItem(item3);
+project2.addItem(item2);
+
+projects.push(project);
+projects.push(project2);
+
 console.log(project);
+console.log(project2);
 
 document.addEventListener("DOMContentLoaded", () => {
   const displayHandler = createDisplayHandler();
   displayHandler.renderProject(project);
+  displayHandler.renderProject(project2);
 });
