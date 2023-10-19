@@ -7,14 +7,6 @@ import tooltip from "./tooltip.svg";
 
 export default function createDisplayHandler() {
   const main = document.querySelector("main");
-  let standardItem = createItem(
-    "Template Title",
-    "Template description, just some random text that needs to be added",
-    "These are the template notes",
-    "2025-10-8",
-    "Medium",
-    true
-  );
 
   //later will use persistance layer, this is temporary
 
@@ -25,62 +17,7 @@ export default function createDisplayHandler() {
   //   initFormActions();
   // }
 
-  function initFormActions() {
-    return new Promise((resolve) => {
-      const dialog = document.querySelector("dialog");
-      const form = document.querySelector("dialog form");
-
-      const itemTitle = form.querySelector("#item-title");
-      const itemDescription = form.querySelector("#item-description");
-      const itemNotes = form.querySelector("#item-notes");
-      const itemDueDate = form.querySelector("#item-due-date");
-      const itemPriority = form.querySelector("#item-priority");
-      const completedStatus = form.querySelector("#completed-status");
-
-      // Add event listeners for the form submission and cancel
-      form.addEventListener(
-        "submit",
-        (e) => {
-          e.preventDefault();
-
-          const item = createItem(
-            itemTitle.value,
-            itemDescription.value,
-            itemNotes.value,
-            itemDueDate.value,
-            itemPriority.value,
-            completedStatus.checked
-          );
-
-          standardItem = item;
-
-          itemTitle.value = "";
-          itemDescription.value = "";
-          itemNotes.value = "";
-          itemDueDate.value = "";
-          itemPriority.value = "";
-          completedStatus.value = false;
-
-          dialog.close();
-          resolve(); // Resolve the Promise when the form is submitted
-        },
-        { once: true }
-      );
-
-      const cancelBtn = document.querySelector(".cancel");
-      cancelBtn.addEventListener(
-        "click",
-        (e) => {
-          e.preventDefault();
-          dialog.close();
-          resolve(); // Resolve the Promise when the form is canceled
-        },
-        { once: true }
-      );
-    });
-  }
-
-  function renderProject(proj) {
+  function renderProjectLoad(proj) {
     const projectContainer = document.createElement("ul");
     projectContainer.classList.add("project-container");
     projectContainer.classList.add(`${proj.projectName}`);
@@ -113,18 +50,120 @@ export default function createDisplayHandler() {
     activateAddItemButton(proj);
   }
 
+  function renderProjectAdd(proj) {}
+
+  // function renderProjectUnload(proj) {
+  //   const projectContainer = document.querySelector(`.${proj.projectName}`);
+
+  //   const projTitle = document.querySelector(
+  //     `.${proj.projectName} .project-container-title`
+  //   );
+  //   projectContainer.removeChild(projTitle);
+
+  //   const projList = document.querySelectorAll(
+  //     `.${proj.projectName} li.list-item`
+  //   );
+
+  //   projList.forEach((item) => {
+  //     projectContainer.removeChild(item);
+  //   });
+
+  //   const addBtn = document.querySelector(`.${proj.projectName} .add`);
+  //   addBtn.removeEventListener("click", () => {
+  //     executeForm(proj);
+  //   });
+  //   projectContainer.removeChild(addBtn);
+
+  //   main.removeChild(projectContainer);
+  // }
+
   async function activateAddItemButton(proj) {
     // To prevent multiple event listeners on a button
     const addBtn = document.querySelector(`.${proj.projectName} .add`);
+
+    addBtn.addEventListener("click", () => {
+      executeForm(proj);
+    });
+  }
+
+  async function executeForm(proj) {
     const dialog = document.querySelector("dialog");
+    dialog.showModal();
 
-    addBtn.addEventListener("click", async (e) => {
-      dialog.showModal();
+    const item = await initFormActions();
 
-      await initFormActions();
-
+    if (item == null) {
+      alert("returning item as null");
+      return;
+    } else {
+      alert("item is not null");
+      console.log(`returned from function: ${item}`);
       proj.addItem(standardItem);
       renderItemListRefresh(proj);
+    }
+  }
+
+  function initFormActions() {
+    return new Promise((resolve) => {
+      const dialog = document.querySelector("dialog");
+      const form = document.querySelector("dialog form");
+      const submitEvent = (e) => {
+        e.preventDefault();
+
+        const itemTitle = form.querySelector("#item-title");
+        const itemDescription = form.querySelector("#item-description");
+        const itemNotes = form.querySelector("#item-notes");
+        const itemDueDate = form.querySelector("#item-due-date");
+        const itemPriority = form.querySelector("#item-priority");
+        const completedStatus = form.querySelector("#completed-status");
+
+        const item = createItem(
+          itemTitle.value,
+          itemDescription.value,
+          itemNotes.value,
+          itemDueDate.value,
+          itemPriority.value,
+          completedStatus.checked
+        );
+
+        itemTitle.value = "";
+        itemDescription.value = "";
+        itemNotes.value = "";
+        itemDueDate.value = "";
+        itemPriority.value = "";
+        completedStatus.value = false;
+
+        console.log(`Inside Submit function: ${item}`);
+        dialog.close();
+        resolve(item); // Resolve the Promise when the form is submitted
+      };
+
+      const cancelEvent = (e) => {
+        e.preventDefault();
+        console.log(`Inside Cancel function`);
+        dialog.close();
+        resolve(null); // Resolve the Promise when the form is canceled
+      };
+
+      form.addEventListener("submit", (e) => {
+        submitEvent(e), { once: true };
+      });
+      const cancelBtn = document.querySelector(".cancel");
+      cancelBtn.addEventListener(
+        "click",
+        (e) => {
+          cancelEvent(e);
+        },
+        { once: true }
+      );
+
+      // // Remove the event listeners when they are done
+      // form.removeEventListener("submit", (e) => {
+      //   submitEvent(e);
+      // });
+      // cancelBtn.removeEventListener("click", (e) => {
+      //   cancelEvent(e);
+      // });
     });
   }
 
@@ -202,5 +241,5 @@ export default function createDisplayHandler() {
 
   // need to add a toggle checkbox function for
 
-  return { renderProject };
+  return { renderProjectLoad /*, renderProjectUnload */ };
 }

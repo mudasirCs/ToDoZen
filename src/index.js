@@ -48,6 +48,7 @@ console.log(project2);
 
 document.addEventListener("DOMContentLoaded", () => {
   const displayHandler = createDisplayHandler();
-  displayHandler.renderProject(project);
-  displayHandler.renderProject(project2);
+  displayHandler.renderProjectLoad(project);
+  displayHandler.renderProjectLoad(project2);
+  // displayHandler.renderProjectUnload(project);
 });

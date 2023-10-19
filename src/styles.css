@@ -84,6 +84,14 @@ side-bar {
 
 .project-section {
   font-size: var(--medim-font);
+  position: relative;
+}
+
+.project-section .add {
+  position: absolute;
+  display: inline-block;
+  top: -10%;
+  left: 55%;
 }
 
 .project-item {
@@ -139,11 +147,11 @@ main {
   margin: 10px;
 }
 
-.project-container .add {
+.add {
   margin-left: 3%;
   margin-top: 1%;
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
 }
 
 .rotate-object:hover {
