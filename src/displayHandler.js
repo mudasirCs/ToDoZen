@@ -14,7 +14,7 @@ export default function createDisplayHandler() {
   //create loadProject function to load from persistance layer
 
   // function initDisplayHanlder() {
-  //   initFormActions();
+  //   fillForm();
   // }
 
   function renderProjectLoad(proj) {
@@ -52,32 +52,32 @@ export default function createDisplayHandler() {
 
   function renderProjectAdd(proj) {}
 
-  // function renderProjectUnload(proj) {
-  //   const projectContainer = document.querySelector(`.${proj.projectName}`);
+  function renderProjectUnload(proj) {
+    const projectContainer = document.querySelector(`.${proj.projectName}`);
 
-  //   const projTitle = document.querySelector(
-  //     `.${proj.projectName} .project-container-title`
-  //   );
-  //   projectContainer.removeChild(projTitle);
+    const projTitle = document.querySelector(
+      `.${proj.projectName} .project-container-title`
+    );
+    projectContainer.removeChild(projTitle);
 
-  //   const projList = document.querySelectorAll(
-  //     `.${proj.projectName} li.list-item`
-  //   );
+    const projList = document.querySelectorAll(
+      `.${proj.projectName} li.list-item`
+    );
 
-  //   projList.forEach((item) => {
-  //     projectContainer.removeChild(item);
-  //   });
+    projList.forEach((item) => {
+      projectContainer.removeChild(item);
+    });
 
-  //   const addBtn = document.querySelector(`.${proj.projectName} .add`);
-  //   addBtn.removeEventListener("click", () => {
-  //     executeForm(proj);
-  //   });
-  //   projectContainer.removeChild(addBtn);
+    const addBtn = document.querySelector(`.${proj.projectName} .add`);
+    addBtn.removeEventListener("click", () => {
+      executeForm(proj);
+    });
+    projectContainer.removeChild(addBtn);
 
-  //   main.removeChild(projectContainer);
-  // }
+    main.removeChild(projectContainer);
+  }
 
-  async function activateAddItemButton(proj) {
+  function activateAddItemButton(proj) {
     // To prevent multiple event listeners on a button
     const addBtn = document.querySelector(`.${proj.projectName} .add`);
 
@@ -90,25 +90,28 @@ export default function createDisplayHandler() {
     const dialog = document.querySelector("dialog");
     dialog.showModal();
 
-    const item = await initFormActions();
-
-    if (item == null) {
-      alert("returning item as null");
-      return;
-    } else {
-      alert("item is not null");
-      console.log(`returned from function: ${item}`);
-      proj.addItem(standardItem);
-      renderItemListRefresh(proj);
-    }
+    fillForm().then(({ item, removeEventListener }) => {
+      // removeEventListener();
+      if (item == null) {
+        // console.log("returning item as null");
+        return;
+      } else {
+        // console.log("item is not null");
+        // console.log(`returned from function: ${item}`);
+        proj.addItem(item);
+        renderItemListRefresh(proj);
+      }
+    });
   }
 
-  function initFormActions() {
+  function fillForm() {
     return new Promise((resolve) => {
-      const dialog = document.querySelector("dialog");
       const form = document.querySelector("dialog form");
+
       const submitEvent = (e) => {
         e.preventDefault();
+
+        const dialog = document.querySelector("dialog");
 
         const itemTitle = form.querySelector("#item-title");
         const itemDescription = form.querySelector("#item-description");
@@ -135,35 +138,42 @@ export default function createDisplayHandler() {
 
         console.log(`Inside Submit function: ${item}`);
         dialog.close();
-        resolve(item); // Resolve the Promise when the form is submitted
+        return item;
+        // form.removeEventListener("submit", (e) => {
+        //   submitEvent(e);
+        // });
       };
 
       const cancelEvent = (e) => {
         e.preventDefault();
+
+        const dialog = document.querySelector("dialog");
+
         console.log(`Inside Cancel function`);
         dialog.close();
-        resolve(null); // Resolve the Promise when the form is canceled
+        return null;
       };
 
-      form.addEventListener("submit", (e) => {
-        submitEvent(e), { once: true };
-      });
-      const cancelBtn = document.querySelector(".cancel");
-      cancelBtn.addEventListener(
-        "click",
-        (e) => {
-          cancelEvent(e);
-        },
-        { once: true }
-      );
+      const submitHandler = (e) => {
+        const item = submitEvent(e);
+        removeEventListeners();
+        resolve({ item, removeEventListeners });
+      };
+      const cancelHandler = (e) => {
+        const item = cancelEvent(e);
+        removeEventListeners();
+        resolve({ item, removeEventListeners });
+      };
 
-      // // Remove the event listeners when they are done
-      // form.removeEventListener("submit", (e) => {
-      //   submitEvent(e);
-      // });
-      // cancelBtn.removeEventListener("click", (e) => {
-      //   cancelEvent(e);
-      // });
+      form.addEventListener("submit", submitHandler, { once: true });
+
+      const cancelBtn = document.querySelector(".cancel");
+      cancelBtn.addEventListener("click", cancelHandler, { once: true });
+
+      function removeEventListeners() {
+        form.removeEventListener("submit", submitHandler);
+        cancelBtn.removeEventListener("click", cancelHandler);
+      }
     });
   }
 
@@ -241,5 +251,5 @@ export default function createDisplayHandler() {
 
   // need to add a toggle checkbox function for
 
-  return { renderProjectLoad /*, renderProjectUnload */ };
+  return { renderProjectLoad, renderProjectUnload };
 }
