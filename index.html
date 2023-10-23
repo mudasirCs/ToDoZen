@@ -20,12 +20,35 @@
 
     <side-bar>
       <div class="projects">
-        <p class="project-section">
-          Projects
+        <div class="project-section">
+          <p>Projects</p>
           <img src="../src/shurikenAdd.svg" class="rotate-object add" />
-        </p>
+
+          <dialog id="project-dialog">
+            <form method="dialog">
+              <div class="form-group">
+                <label for="project-title">Item Title:*</label>
+                <input
+                  type="text"
+                  name="project-title"
+                  id="project-title"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="project-image">Project icon:</label>
+                <input type="file" id="project-image" accept="image/*" />
+              </div>
+              <div class="form-actions">
+                <button class="cancel" value="cancel">Cancel</button>
+                <button class="submit" value="submit">Submit</button>
+              </div>
+            </form>
+          </dialog>
+        </div>
         <div class="project-item">
-          <img src="../src/personal.png" alt="project-item-1" />
+          <img src="../src/personal.png" alt="project-item-image" />
           <p class="project-item-label">Personal</p>
         </div>
       </div>
@@ -41,7 +64,7 @@
     -->
 
     <main>
-      <dialog>
+      <dialog id="item-dialog">
         <form method="dialog">
           <div class="form-group">
             <label for="item-title">Item Title:*</label>
