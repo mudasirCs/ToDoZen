@@ -82,6 +82,25 @@ side-bar {
 /* .projects {
 } */
 
+#project-dialog {
+  font-family: sans-serif;
+  font-size: var(--small-font);
+  word-spacing: 0.1px;
+  border-radius: 25px;
+}
+
+#project-dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  justify-content: center;
+  align-items: start;
+}
+
+#project-dialog .form-actions {
+  align-self: center;
+}
+
 .project-section {
   font-size: var(--medim-font);
   position: relative;
@@ -241,13 +260,13 @@ main {
 }
 
 /* modal styling */
-dialog {
+#item-dialog {
   font-family: sans-serif;
   word-spacing: 0.1px;
   border-radius: 25px;
 }
 
-dialog form {
+#item-dialog form {
   display: flex;
   flex-direction: column;
   gap: 15px;

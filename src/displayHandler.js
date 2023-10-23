@@ -1,6 +1,8 @@
 import { findProjectByName } from "./index";
 import createItem from "./item";
 import katana from "./katana.png";
+import projectImage from "./personal.png";
+import createProject from "./project";
 import shuriken from "./shurikenAdd.svg";
 import "./styles.css";
 import tooltip from "./tooltip.svg";
@@ -13,9 +15,112 @@ export default function createDisplayHandler() {
   //split into create proj, add items, remove items
   //create loadProject function to load from persistance layer
 
-  // function initDisplayHanlder() {
-  //   fillForm();
-  // }
+  function initDisplayHanlder() {
+    // fillItemForm();
+    activateAddProjectButton();
+  }
+
+  function activateAddProjectButton() {
+    const addProjButton = document.querySelector(".project-section img");
+    addProjButton.addEventListener("click", addProjectForm);
+  }
+
+  function addProjectForm() {
+    const dialog = document.getElementById("project-dialog");
+    const projectSection = document.querySelector(".projects");
+    dialog.showModal();
+    fillProjectForm().then((proj) => {
+      console.log(proj);
+      const project = renderProjectItem(proj);
+      console.log(project);
+      projectSection.appendChild(project);
+    });
+  }
+
+  function fillProjectForm() {
+    return new Promise((resolve) => {
+      const form = document.querySelector("#project-dialog form");
+
+      const submitEvent = (e) => {
+        e.preventDefault();
+
+        const dialog = document.getElementById("project-dialog");
+
+        const projTitle = document.getElementById("project-title");
+        const projImage = document.getElementById("project-image");
+
+        // const project = renderProjectItem({
+        //   projTitle: projTitle.value,
+        //   projImage: projImage.value,
+        // });
+
+        //have to add path to img in project obj
+        const project = createProject(projTitle.value);
+
+        projTitle.value = "";
+        projImage.value = "";
+
+        // console.log(`Inside Submit function: ${item}`);
+        dialog.close();
+        return project;
+      };
+
+      const cancelEvent = (e) => {
+        e.preventDefault();
+
+        const dialog = document.getElementById("project-dialog");
+
+        // console.log(`Inside Cancel function`);
+        dialog.close();
+        return null;
+      };
+
+      const submitHandler = (e) => {
+        const project = submitEvent(e);
+        removeEventListeners();
+        resolve(project);
+      };
+      const cancelHandler = (e) => {
+        const project = cancelEvent(e);
+        removeEventListeners();
+        resolve(project);
+      };
+      //if possible seperate event listeners from resolution
+      form.addEventListener("submit", submitHandler, { once: true });
+
+      const cancelBtn = document.querySelector("#project-dialog .cancel");
+      cancelBtn.addEventListener("click", cancelHandler, { once: true });
+
+      function removeEventListeners() {
+        form.removeEventListener("submit", submitHandler);
+        cancelBtn.removeEventListener("click", cancelHandler);
+      }
+    });
+  }
+
+  function renderProjectItem(projItem) {
+    const projectItem = document.createElement("div");
+    projectItem.classList.add("project-item");
+    projectItem.addEventListener("click", (e) => {
+      // alert(projItem.projectName);
+      // renderProjectUnload();
+      renderProjectLoad(projItem);
+    });
+
+    //replace with projItem.img
+    const imgElement = document.createElement("img");
+    imgElement.src = "../src/personal.png";
+    imgElement.alt = "project-item-image";
+
+    const pElement = document.createElement("p");
+    pElement.classList.add("project-item-label");
+    pElement.innerText = projItem.projectName;
+
+    projectItem.appendChild(imgElement);
+    projectItem.appendChild(pElement);
+
+    return projectItem;
+  }
 
   function renderProjectLoad(proj) {
     const projectContainer = document.createElement("ul");
@@ -49,8 +154,6 @@ export default function createDisplayHandler() {
 
     activateAddItemButton(proj);
   }
-
-  function renderProjectAdd(proj) {}
 
   function renderProjectUnload(proj) {
     const projectContainer = document.querySelector(`.${proj.projectName}`);
@@ -87,10 +190,10 @@ export default function createDisplayHandler() {
   }
 
   async function executeForm(proj) {
-    const dialog = document.querySelector("dialog");
+    const dialog = document.getElementById("item-dialog");
     dialog.showModal();
 
-    fillForm().then(({ item, removeEventListener }) => {
+    fillItemForm().then((item) => {
       // removeEventListener();
       if (item == null) {
         // console.log("returning item as null");
@@ -104,14 +207,14 @@ export default function createDisplayHandler() {
     });
   }
 
-  function fillForm() {
+  function fillItemForm() {
     return new Promise((resolve) => {
-      const form = document.querySelector("dialog form");
+      const form = document.querySelector("#item-dialog form");
 
       const submitEvent = (e) => {
         e.preventDefault();
 
-        const dialog = document.querySelector("dialog");
+        const dialog = document.getElementById("item-dialog");
 
         const itemTitle = form.querySelector("#item-title");
         const itemDescription = form.querySelector("#item-description");
@@ -136,20 +239,17 @@ export default function createDisplayHandler() {
         itemPriority.value = "";
         completedStatus.value = false;
 
-        console.log(`Inside Submit function: ${item}`);
+        // console.log(`Inside Submit function: ${item}`);
         dialog.close();
         return item;
-        // form.removeEventListener("submit", (e) => {
-        //   submitEvent(e);
-        // });
       };
 
       const cancelEvent = (e) => {
         e.preventDefault();
 
-        const dialog = document.querySelector("dialog");
+        const dialog = document.getElementById("item-dialog");
 
-        console.log(`Inside Cancel function`);
+        // console.log(`Inside Cancel function`);
         dialog.close();
         return null;
       };
@@ -157,17 +257,17 @@ export default function createDisplayHandler() {
       const submitHandler = (e) => {
         const item = submitEvent(e);
         removeEventListeners();
-        resolve({ item, removeEventListeners });
+        resolve(item);
       };
       const cancelHandler = (e) => {
         const item = cancelEvent(e);
         removeEventListeners();
-        resolve({ item, removeEventListeners });
+        resolve(item);
       };
-
+      //if possible seperate event listeners from resolution
       form.addEventListener("submit", submitHandler, { once: true });
 
-      const cancelBtn = document.querySelector(".cancel");
+      const cancelBtn = document.querySelector("#item-dialog .cancel");
       cancelBtn.addEventListener("click", cancelHandler, { once: true });
 
       function removeEventListeners() {
@@ -250,6 +350,6 @@ export default function createDisplayHandler() {
   }
 
   // need to add a toggle checkbox function for
-
+  initDisplayHanlder();
   return { renderProjectLoad, renderProjectUnload };
 }
