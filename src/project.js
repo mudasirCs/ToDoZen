@@ -1,5 +1,11 @@
 import createList from "./list";
 //img path [property]
-export default function createProject(projName) {
-  return { projectName: projName, ...createList() };
+//project color property
+export default function createProject(projName, projClr = "red") {
+  return {
+    projectName: projName,
+    // projectImage: projImg,
+    projectColor: projClr,
+    ...createList(),
+  };
 }

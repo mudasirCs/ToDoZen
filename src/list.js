@@ -5,9 +5,13 @@ export default function createList() {
     itemsList.push(item);
   }
 
-  function removeItem(index) {
-    itemsList.splice[(index, 1)];
+  function replaceItem(index, newItem) {
+    itemsList[index] = newItem;
   }
 
-  return { itemsList, addItem, removeItem };
+  function removeItem(index) {
+    itemsList.splice(index, 1);
+  }
+
+  return { itemsList, addItem, removeItem, replaceItem };
 }

@@ -24,7 +24,7 @@ export default function createItem(
     title,
     description,
     notes,
-    priority: parseInt(priority),
+    priority,
     completedStatus,
   };
 }

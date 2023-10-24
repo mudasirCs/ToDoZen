@@ -1,13 +1,14 @@
-import { findProjectByName } from "./index";
+import deleteIcon from "./fire.png";
 import createItem from "./item";
 import katana from "./katana.png";
 import projectImage from "./personal.png";
 import createProject from "./project";
+import editIcon from "./quill.png";
 import shuriken from "./shurikenAdd.svg";
 import "./styles.css";
 import tooltip from "./tooltip.svg";
 
-export default function createDisplayHandler() {
+export default function createDisplayHandler(proj) {
   const main = document.querySelector("main");
 
   //later will use persistance layer, this is temporary
@@ -15,9 +16,15 @@ export default function createDisplayHandler() {
   //split into create proj, add items, remove items
   //create loadProject function to load from persistance layer
 
-  function initDisplayHanlder() {
+  function initDisplayHanlder(proj) {
     // fillItemForm();
     activateAddProjectButton();
+
+    const projectItem = renderProjectItem(proj);
+    const projectSection = document.querySelector(".projects");
+    projectSection.appendChild(projectItem);
+
+    projectItem.click();
   }
 
   function activateAddProjectButton() {
@@ -30,9 +37,9 @@ export default function createDisplayHandler() {
     const projectSection = document.querySelector(".projects");
     dialog.showModal();
     fillProjectForm().then((proj) => {
-      console.log(proj);
+      // console.log(proj);
       const project = renderProjectItem(proj);
-      console.log(project);
+      // console.log(project);
       projectSection.appendChild(project);
     });
   }
@@ -56,7 +63,7 @@ export default function createDisplayHandler() {
 
         //have to add path to img in project obj
         const project = createProject(projTitle.value);
-
+        // console.log(`Inside proj add listener ${projTitle.value}`);
         projTitle.value = "";
         projImage.value = "";
 
@@ -98,12 +105,19 @@ export default function createDisplayHandler() {
     });
   }
 
+  // function renderEditProject() {
+  //   const editEvent = (e) => {
+  //     const itemTitle=
+
+  //   };
+  // }
+
   function renderProjectItem(projItem) {
     const projectItem = document.createElement("div");
     projectItem.classList.add("project-item");
     projectItem.addEventListener("click", (e) => {
       // alert(projItem.projectName);
-      // renderProjectUnload();
+      renderProjectUnload();
       renderProjectLoad(projItem);
     });
 
@@ -125,7 +139,7 @@ export default function createDisplayHandler() {
   function renderProjectLoad(proj) {
     const projectContainer = document.createElement("ul");
     projectContainer.classList.add("project-container");
-    projectContainer.classList.add(`${proj.projectName}`);
+    projectContainer.classList.add(`${proj.projectName.split(" ").join("-")}`);
 
     const projTitle = document.createElement("p");
     projTitle.classList.add("project-container-title");
@@ -153,43 +167,68 @@ export default function createDisplayHandler() {
     main.appendChild(projectContainer);
 
     activateAddItemButton(proj);
+    activateEditItemButton(proj);
+    activateDeleteItemButton(proj);
   }
 
-  function renderProjectUnload(proj) {
-    const projectContainer = document.querySelector(`.${proj.projectName}`);
-
-    const projTitle = document.querySelector(
-      `.${proj.projectName} .project-container-title`
+  //passed projectContainer, change if needed
+  function activateEditItemButton(proj) {
+    const projectContainer = document.querySelector(
+      `.${proj.projectName.split(" ").join("-")}`
     );
-    projectContainer.removeChild(projTitle);
+    projectContainer.addEventListener("click", (e) => {
+      if (e.target.classList.contains("list-item-edit")) {
+        const listItem = e.target.closest("li");
+        if (listItem) {
+          const index = Array.from(listItem.parentNode.children).indexOf(
+            listItem
+          );
 
-    const projList = document.querySelectorAll(
-      `.${proj.projectName} li.list-item`
+          editItemForm(index - 1);
+        }
+      }
+    });
+  }
+
+  function activateDeleteItemButton(proj) {
+    const projectContainer = document.querySelector(
+      `.${proj.projectName.split(" ").join("-")}`
     );
-
-    projList.forEach((item) => {
-      projectContainer.removeChild(item);
+    projectContainer.addEventListener("click", (e) => {
+      if (e.target.classList.contains("list-item-delete")) {
+        const listItem = e.target.closest("li");
+        if (listItem) {
+          const index = Array.from(listItem.parentNode.children).indexOf(
+            listItem
+          );
+          proj.removeItem(index - 1);
+          renderItemListRefresh(proj);
+        }
+      }
     });
+  }
 
-    const addBtn = document.querySelector(`.${proj.projectName} .add`);
-    addBtn.removeEventListener("click", () => {
-      executeForm(proj);
+  function renderProjectUnload() {
+    const projectContainers = document.querySelectorAll(".project-container");
+
+    projectContainers.forEach((projectContainer) => {
+      main.removeChild(projectContainer);
     });
-    projectContainer.removeChild(addBtn);
-
-    main.removeChild(projectContainer);
   }
 
   function activateAddItemButton(proj) {
     // To prevent multiple event listeners on a button
-    const addBtn = document.querySelector(`.${proj.projectName} .add`);
+
+    const addBtn = document.querySelector(
+      `.${proj.projectName.split(" ").join("-")} .add`
+    );
 
     addBtn.addEventListener("click", () => {
-      executeForm(proj);
+      addItemForm(proj);
     });
   }
 
-  async function executeForm(proj) {
+  function addItemForm(proj) {
     const dialog = document.getElementById("item-dialog");
     dialog.showModal();
 
@@ -197,12 +236,34 @@ export default function createDisplayHandler() {
       // removeEventListener();
       if (item == null) {
         // console.log("returning item as null");
-        return;
+        return null;
       } else {
         // console.log("item is not null");
         // console.log(`returned from function: ${item}`);
         proj.addItem(item);
         renderItemListRefresh(proj);
+      }
+    });
+  }
+
+  function editItemForm(index) {
+    //use diff modal
+    const dialog = document.getElementById("item-dialog");
+    dialog.showModal();
+
+    fillItemForm().then((editedItem) => {
+      // removeEventListener();
+      if (editedItem == null) {
+        // console.log("returning item as null");
+        return null;
+      } else {
+        // console.log("item is not null");
+        // console.log(`returned from function: ${item}`);
+        //*efficiency
+        //change seperately instead of loading whole module
+        proj.replaceItem(index, editedItem);
+        renderItemListRefresh(proj);
+        // console.log(proj);
       }
     });
   }
@@ -235,8 +296,9 @@ export default function createDisplayHandler() {
         itemTitle.value = "";
         itemDescription.value = "";
         itemNotes.value = "";
+        //need to set to today
         itemDueDate.value = "";
-        itemPriority.value = "";
+        itemPriority.value = 3;
         completedStatus.value = false;
 
         // console.log(`Inside Submit function: ${item}`);
@@ -278,16 +340,20 @@ export default function createDisplayHandler() {
   }
 
   function renderItemListRefresh(proj) {
-    const projectContainer = document.querySelector(`.${proj.projectName}`);
+    const projectContainer = document.querySelector(
+      `.${proj.projectName.split(" ").join("-")}`
+    );
 
     const listItems = projectContainer.querySelectorAll(
-      `.${proj.projectName} li.list-item`
+      `.${proj.projectName.split(" ").join("-")} li.list-item`
     );
     listItems.forEach((item) => {
       projectContainer.removeChild(item);
     });
 
-    const addBtn = document.querySelector(`.${proj.projectName} .add`);
+    const addBtn = document.querySelector(
+      `.${proj.projectName.split(" ").join("-")} .add`
+    );
 
     proj.itemsList.forEach((element) => {
       const item = renderListItem(element);
@@ -295,6 +361,7 @@ export default function createDisplayHandler() {
     });
   }
 
+  // need to add edit and
   function renderListItem(item) {
     const li = document.createElement("li");
     li.classList.add("list-item");
@@ -325,8 +392,22 @@ export default function createDisplayHandler() {
     description.classList.add("list-item-description");
     description.textContent = item.description;
 
+    const expandCheck = document.createElement("input");
+    expandCheck.type = "checkbox";
+    expandCheck.classList.add("expand-btn");
+
     const priorityDiv = document.createElement("div");
     priorityDiv.classList.add("list-item-priority-container");
+
+    //need to dynamically change based on due
+    // date closeness
+    //integrate when adding date module
+    let priorityClr = "green";
+    if (item.priority == 1) {
+      priorityClr = "red";
+    } else if (item.priority == 2) {
+      priorityClr = "orange";
+    }
 
     for (let i = item.priority; i <= 3; i++) {
       const priorityImg = document.createElement("img");
@@ -341,15 +422,34 @@ export default function createDisplayHandler() {
     checkbox.classList.add("list-item-status");
     checkbox.checked = item.completedStatus;
 
+    const editButton = document.createElement("img");
+    editButton.src = editIcon;
+    editButton.alt = "edit icon";
+    editButton.classList.add("list-item-edit");
+
+    const deleteButton = document.createElement("img");
+    deleteButton.src = deleteIcon;
+    deleteButton.alt = "delete icon";
+    deleteButton.classList.add("list-item-delete");
+
+    li.style.borderLeft = `5px solid ${priorityClr}`;
+
     li.appendChild(headDiv);
     li.appendChild(description);
+    li.appendChild(expandCheck);
     li.appendChild(priorityDiv);
     li.appendChild(checkbox);
+    li.appendChild(editButton);
+    li.appendChild(deleteButton);
 
     return li;
   }
 
+  initDisplayHanlder(proj);
   // need to add a toggle checkbox function for
-  initDisplayHanlder();
-  return { renderProjectLoad, renderProjectUnload };
+  return {
+    renderProjectLoad,
+    renderProjectUnload,
+    renderProjectItem,
+  };
 }
