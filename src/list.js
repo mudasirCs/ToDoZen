@@ -1,17 +1,15 @@
-export default function createList() {
-  let itemsList = [];
+let listPrototype = {
+  addItem(item) {
+    this.itemsList.push(item);
+  },
 
-  function addItem(item) {
-    itemsList.push(item);
-  }
+  replaceItem(index, newItem) {
+    this.itemsList[index] = newItem;
+  },
 
-  function replaceItem(index, newItem) {
-    itemsList[index] = newItem;
-  }
+  removeItem(index) {
+    this.itemsList.splice(index, 1);
+  },
+};
 
-  function removeItem(index) {
-    itemsList.splice(index, 1);
-  }
-
-  return { itemsList, addItem, removeItem, replaceItem };
-}
+export default listPrototype;

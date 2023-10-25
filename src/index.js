@@ -1,6 +1,11 @@
 import createDisplayHandler from "./displayHandler";
 import createItem from "./item";
+import createList from "./list";
 import createProject from "./project";
+import LocalStorageHandler from "./storage";
+
+//since storage does not save functions
+//need to make habit of using prototype bases functions
 
 const item1 = createItem(
   "fish takeout",
@@ -28,14 +33,40 @@ const item3 = createItem(
   false
 );
 
-const projects = [];
+const project1 = createProject("Miscellaneous");
+project1.addItem(item1);
+project1.addItem(item2);
 
-const project = createProject("Personal", "blue");
-project.addItem(item1);
-project.addItem(item2);
+// console.log(project1);
 
-projects.push(project);
+// const project2 = createProject("Finder");
+// project2.addItem(item3);
+
+const localStorageHandler = LocalStorageHandler();
+// const projects = [];
+// projects.push(project1);
+// localStorageHandler.saveProjects(projects);
+// localStorageHandler.removeProject(project1);
+let projects = localStorageHandler.loadProjects();
+// const tester = localStorageHandler.loadProjects();
+// console.log(tester);
+// localStorageHandler.saveProjects(projects);
+// tester = localStorageHandler.loadProjects();
+// console.log(tester);
+
+// projects.push(project);
+
+// localStorageHandler.addProject(projects);
+
+// console.log(projects);
+// const project = createProject("Personal", "blue");
+// project.addItem(item1);
+// project.addItem(item2);
+
+// projects.push(project);
+
+console.log(projects);
 
 document.addEventListener("DOMContentLoaded", () => {
-  const displayHandler = createDisplayHandler(project);
+  const displayHandler = createDisplayHandler(projects);
 });

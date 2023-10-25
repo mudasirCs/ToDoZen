@@ -1,11 +1,10 @@
-import createList from "./list";
+import listPrototype from "./list";
 //img path [property]
 //project color property
-export default function createProject(projName, projClr = "red") {
-  return {
+export default function createProject(projName, list = []) {
+  return Object.assign({}, listPrototype, {
     projectName: projName,
     // projectImage: projImg,
-    projectColor: projClr,
-    ...createList(),
-  };
+    itemsList: [...list],
+  });
 }

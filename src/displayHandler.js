@@ -5,26 +5,28 @@ import projectImage from "./personal.png";
 import createProject from "./project";
 import editIcon from "./quill.png";
 import shuriken from "./shurikenAdd.svg";
+import LocalStorageHandler from "./storage";
 import "./styles.css";
 import tooltip from "./tooltip.svg";
 
 export default function createDisplayHandler(proj) {
   const main = document.querySelector("main");
-
+  const localStorageHandler = LocalStorageHandler();
   //later will use persistance layer, this is temporary
 
   //split into create proj, add items, remove items
   //create loadProject function to load from persistance layer
 
-  function initDisplayHanlder(proj) {
+  function initDisplayHanlder(projects) {
     // fillItemForm();
     activateAddProjectButton();
+    projects.forEach((proj, index) => {
+      const projectItem = renderProjectItem(proj);
+      const projectSection = document.querySelector(".projects");
+      projectSection.appendChild(projectItem);
 
-    const projectItem = renderProjectItem(proj);
-    const projectSection = document.querySelector(".projects");
-    projectSection.appendChild(projectItem);
-
-    projectItem.click();
+      if (index == 0) projectItem.click();
+    });
   }
 
   function activateAddProjectButton() {
@@ -37,8 +39,9 @@ export default function createDisplayHandler(proj) {
     const projectSection = document.querySelector(".projects");
     dialog.showModal();
     fillProjectForm().then((proj) => {
-      // console.log(proj);
+      console.log(proj);
       const project = renderProjectItem(proj);
+      localStorageHandler.addProject(proj);
       // console.log(project);
       projectSection.appendChild(project);
     });
@@ -62,6 +65,7 @@ export default function createDisplayHandler(proj) {
         // });
 
         //have to add path to img in project obj
+        //*proj creation
         const project = createProject(projTitle.value);
         // console.log(`Inside proj add listener ${projTitle.value}`);
         projTitle.value = "";
@@ -104,13 +108,6 @@ export default function createDisplayHandler(proj) {
       }
     });
   }
-
-  // function renderEditProject() {
-  //   const editEvent = (e) => {
-  //     const itemTitle=
-
-  //   };
-  // }
 
   function renderProjectItem(projItem) {
     const projectItem = document.createElement("div");
@@ -184,7 +181,7 @@ export default function createDisplayHandler(proj) {
             listItem
           );
 
-          editItemForm(index - 1);
+          editItemForm(proj, index - 1);
         }
       }
     });
@@ -202,6 +199,7 @@ export default function createDisplayHandler(proj) {
             listItem
           );
           proj.removeItem(index - 1);
+          localStorageHandler.updateProject(proj);
           renderItemListRefresh(proj);
         }
       }
@@ -240,13 +238,15 @@ export default function createDisplayHandler(proj) {
       } else {
         // console.log("item is not null");
         // console.log(`returned from function: ${item}`);
+        console.log(proj);
         proj.addItem(item);
+        localStorageHandler.updateProject(proj);
         renderItemListRefresh(proj);
       }
     });
   }
 
-  function editItemForm(index) {
+  function editItemForm(editProj, index) {
     //use diff modal
     const dialog = document.getElementById("item-dialog");
     dialog.showModal();
@@ -261,8 +261,9 @@ export default function createDisplayHandler(proj) {
         // console.log(`returned from function: ${item}`);
         //*efficiency
         //change seperately instead of loading whole module
-        proj.replaceItem(index, editedItem);
-        renderItemListRefresh(proj);
+        editProj.replaceItem(index, editedItem);
+        localStorageHandler.updateProject(editProj);
+        renderItemListRefresh(editProj);
         // console.log(proj);
       }
     });
@@ -296,7 +297,6 @@ export default function createDisplayHandler(proj) {
         itemTitle.value = "";
         itemDescription.value = "";
         itemNotes.value = "";
-        //need to set to today
         itemDueDate.value = "";
         itemPriority.value = 3;
         completedStatus.value = false;
