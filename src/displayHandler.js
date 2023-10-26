@@ -1,6 +1,7 @@
 import deleteIcon from "./fire.png";
 import createItem from "./item";
 import katana from "./katana.png";
+import logoIcon from "./logo.svg";
 import projectImage from "./personal.png";
 import createProject from "./project";
 import editIcon from "./quill.png";
@@ -17,8 +18,18 @@ export default function createDisplayHandler(proj) {
   //split into create proj, add items, remove items
   //create loadProject function to load from persistance layer
 
+  function loadAssets() {
+    //header logo
+    const logo = document.querySelector(".zoomed-image img");
+    logo.src = logoIcon;
+    //sidebar add icon
+    const addProjectIcon = document.querySelector(".project-section .add");
+    addProjectIcon.src = shuriken;
+  }
+
   function initDisplayHanlder(projects) {
     // fillItemForm();
+    loadAssets();
     activateAddProjectButton();
     projects.forEach((proj, index) => {
       const projectItem = renderProjectItem(proj);

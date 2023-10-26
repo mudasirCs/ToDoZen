@@ -10,13 +10,16 @@ module.exports = {
   devtool: "inline-source-map",
   module: {
     rules: [
-      { test: /\.(woff|woff2|eot|ttf|otf)$/i, type: "asset/resource" },
       {
-        test: /\.css$/i,
+        test: /\.(png|jpg|jpeg|svg|avif)$/i,
+        type: "asset/resource",
+      },
+      {
+        test: /\.css$/,
         use: ["style-loader", "css-loader"],
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        test: /\.(woff|woff2)$/i,
         type: "asset/resource",
       },
     ],
