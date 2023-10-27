@@ -131,7 +131,7 @@ export default function createDisplayHandler(proj) {
 
     //replace with projItem.img
     const imgElement = document.createElement("img");
-    imgElement.src = "../src/personal.png";
+    imgElement.src = projectImage;
     imgElement.alt = "project-item-image";
 
     const pElement = document.createElement("p");
