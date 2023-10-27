@@ -1,4 +1,5 @@
-import deleteIcon from "./fire.png";
+import deleteProjectIcon from "./delete.png";
+import deleteItemIcon from "./fire.png";
 import createItem from "./item";
 import katana from "./katana.png";
 import logoIcon from "./logo.svg";
@@ -50,9 +51,12 @@ export default function createDisplayHandler(proj) {
     const projectSection = document.querySelector(".projects");
     dialog.showModal();
     fillProjectForm().then((proj) => {
-      console.log(proj);
       const project = renderProjectItem(proj);
+
       localStorageHandler.addProject(proj);
+
+      renderProjectUnload();
+      renderProjectLoad(proj);
       // console.log(project);
       projectSection.appendChild(project);
     });
@@ -120,14 +124,21 @@ export default function createDisplayHandler(proj) {
     });
   }
 
+  function projectItemClickHandler(project) {
+    renderProjectUnload();
+    renderProjectLoad(project);
+  }
+
   function renderProjectItem(projItem) {
     const projectItem = document.createElement("div");
     projectItem.classList.add("project-item");
-    projectItem.addEventListener("click", (e) => {
-      // alert(projItem.projectName);
-      renderProjectUnload();
-      renderProjectLoad(projItem);
-    });
+
+    const boundProjectItemClickHandler = projectItemClickHandler.bind(
+      null,
+      projItem
+    );
+
+    projectItem.addEventListener("click", boundProjectItemClickHandler);
 
     //replace with projItem.img
     const imgElement = document.createElement("img");
@@ -138,13 +149,38 @@ export default function createDisplayHandler(proj) {
     pElement.classList.add("project-item-label");
     pElement.innerText = projItem.projectName;
 
+    const deleteButton = document.createElement("img");
+    deleteButton.src = deleteProjectIcon;
+    deleteButton.alt = "delete icon";
+    deleteButton.classList.add("project-item-delete-button");
+
+    deleteButton.addEventListener("click", (e) => {
+      projectItem.removeEventListener("click", boundProjectItemClickHandler);
+
+      const projectSection = document.querySelector(".projects");
+      localStorageHandler.removeProject(projItem);
+      projectSection.removeChild(projectItem);
+
+      renderProjectUnload();
+      const nextLoadProject = localStorageHandler.popProject();
+      if (nextLoadProject !== null) {
+        console.log("here it is!!!!!");
+        console.log(nextLoadProject);
+        renderProjectLoad(nextLoadProject);
+      }
+      // projectItem.addEventListener("click", boundProjectItemClickHandler);
+    });
+
     projectItem.appendChild(imgElement);
     projectItem.appendChild(pElement);
+    projectItem.appendChild(deleteButton);
 
     return projectItem;
   }
 
   function renderProjectLoad(proj) {
+    console.log("project loading entered");
+    console.log(proj);
     const projectContainer = document.createElement("ul");
     projectContainer.classList.add("project-container");
     projectContainer.classList.add(`${proj.projectName.split(" ").join("-")}`);
@@ -158,7 +194,7 @@ export default function createDisplayHandler(proj) {
     proj.itemsList.forEach((element, index) => {
       projList[index] = renderListItem(element);
     });
-
+    //join these two
     projList.forEach((item) => {
       projectContainer.appendChild(item);
     });
@@ -439,7 +475,7 @@ export default function createDisplayHandler(proj) {
     editButton.classList.add("list-item-edit");
 
     const deleteButton = document.createElement("img");
-    deleteButton.src = deleteIcon;
+    deleteButton.src = deleteItemIcon;
     deleteButton.alt = "delete icon";
     deleteButton.classList.add("list-item-delete");
 

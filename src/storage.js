@@ -58,6 +58,14 @@ export default function LocalStorageHandler() {
     }
   }
 
+  function popProject() {
+    const projects = JSON.parse(localStorage.getItem("projects")) || [];
+    if (projects.length > 0) {
+      return createProject(projects[0].projectName, projects[0].itemsList);
+    }
+    return {}; // Return an empty object instead of null
+  }
+
   function removeProject(projectToRemove) {
     const projects = loadProjects();
 
@@ -79,5 +87,6 @@ export default function LocalStorageHandler() {
     addProject,
     removeProject,
     updateProject,
+    popProject,
   };
 }

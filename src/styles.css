@@ -6,6 +6,10 @@
   font-style: normal;
 }
 
+*[alt] {
+  font-family: sans-serif;
+}
+
 body {
   --black: #040404;
   --white: #e4e4e4;
@@ -119,6 +123,7 @@ side-bar {
 }
 
 .project-item {
+  position: relative;
   display: flex;
   gap: 10px;
   justify-content: start;
@@ -143,6 +148,22 @@ side-bar {
 
 .project-item-label {
   font-size: var(--small-font);
+}
+
+.project-item .project-item-delete-button {
+  --size: 25px;
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  top: -10%;
+  right: -2%;
+  box-shadow: 0 0 0 transparent;
+  transition: all 0.3s;
+}
+
+.project-item-delete-button:hover {
+  box-shadow: 0 0 20px red;
+  --size: 30px;
 }
 
 main {
