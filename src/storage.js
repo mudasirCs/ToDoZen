@@ -3,13 +3,16 @@ import createProject from "./project";
 export default function LocalStorageHandler() {
   function createProjects() {
     const project = createProject("Personal");
-    localStorage.setItem("projects", JSON.stringify(project));
-    return project;
+    const projects = [];
+    projects.push(project);
+    localStorage.setItem("projects", JSON.stringify(projects));
+    return projects;
   }
 
   function loadProjects() {
     if (localStorage.getItem("projects")) {
       const projectData = JSON.parse(localStorage.getItem("projects"));
+      console.log(projectData);
       const projects = projectData.map((project) => {
         return createProject(project.projectName, project.itemsList);
       });
